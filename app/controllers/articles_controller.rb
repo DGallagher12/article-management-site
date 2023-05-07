@@ -1,5 +1,7 @@
 class ArticlesController < ApplicationController
+  protect_from_forgery with: :exception, unless: -> {request.format.json?}
   before_action :set_article, only: %i[ show edit update destroy ]
+  skip_before_action :verify_authenticity_token
 
   # GET /articles or /articles.json
   def index
@@ -53,7 +55,7 @@ class ArticlesController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to articles_url, notice: "Article was successfully destroyed." }
-      format.json { head :no_content }
+      format.json { render json: Post.all, status: :ok }
     end
   end
 
@@ -65,6 +67,6 @@ class ArticlesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def article_params
-      params.require(:article).permit(:title, :body, :published)
+      params.require(:article).permit(:title, :body, :published, :id)
     end
 end
